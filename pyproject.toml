@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "research-metadata-toolkit"
+version = "1.0.0"
+description = "Tools for cleaning, validating, enriching, and analyzing scholarly metadata."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Research Metadata Toolkit contributors" }]
+dependencies = [
+  "ftfy>=6.1",
+  "openpyxl>=3.1",
+  "pandas>=2.0",
+  "requests>=2.31",
+  "tqdm>=4.66",
+]
+
+[project.scripts]
+research-metadata-toolkit = "research_metadata_toolkit.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["research_metadata_toolkit*"]
+
+[tool.setuptools.package-data]
+research_metadata_toolkit = ["data/*.json"]

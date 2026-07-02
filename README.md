@@ -1,50 +1,145 @@
-﻿# 🌟 Caribbean Affiliation Script 🌟
-The Caribbean Affiliation Script is a comprehensive data analyzing and processing script focused on extracting author information to determine whether they are affiliated with a Caribbean institution/organisation and/or is a Caribbean-based author. The script's core features include URL searching and processing, DOI searching and processing, and text encoding fixing in Excel files.
+# Research Metadata Toolkit
 
-## 🚀 Key Features
-* URL searching and processing using concurrent threads
-* DOI searching and processing using concurrent threads
-* Encoding issue fixing in Excel files
-* Data manipulation and storage using pandas
-* Concurrent processing using concurrent.futures
-* Progress tracking using tqdm
-* Text encoding fixes using ftfy
+Research Metadata Toolkit is a Python package and command-line tool for cleaning, validating, enriching, and analyzing scholarly metadata in Excel workbooks.
 
-## 🛠️ Tech Stack
-* Python 3.10
-* requests library for making HTTP requests
-* pandas library for data manipulation and storage
-* concurrent.futures library for concurrent processing
-* tqdm library for progress tracking
-* ftfy library for text encoding fixes
-* html library for text processing and encoding
-* Excel files for input and output data
+Current workflows include:
 
-## 📦 Getting Started / Setup Instructions
-### Prerequisites
-* Python 3.10 installed on your system
-* requests, pandas, concurrent.futures, tqdm, and ftfy libraries installed
-* Excel files for input and output data
+- Fix encoding issues in `Title` and `Authors` columns.
+- Enrich DOI rows with OpenAlex and Crossref metadata.
+- Review article URLs, discover DOI/page metadata, and flag Caribbean affiliations.
 
-### Installation
-TO BE ADDED
+## Intended Users
 
-### Running Locally
-TO BE ADDED 
+- Researchers and graduate students
+- Librarians and repository teams
+- Systematic review teams
+- Bibliometric analysts
+- Research administrators
 
-## 📂 Project Structure
-```markdown
-TO BE ADDED
+## Installation
+
+Python 3.10 or newer is recommended.
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+python -m pip install -e .
 ```
 
-## 🤝 Contributing
-Contributions are welcome! If you'd like to contribute to the project, please fork the repository and submit a pull request.
+For development and tests:
 
-## 📝 License
-The Caribbean Affiliation Script is licensed under the MIT License.
+```powershell
+python -m pip install -e .
+python -m pip install pytest
+python -m pytest
+```
 
-## 📬 Contact Me
-For any questions or concerns, please contact us at [silfordmoore@gmail.com](mailto:silfordmoore@gmail.com)
+## Usage
 
-## 💖 Thanks Message
-A huge thank you to everyone who has contributed to the project! 🙏
+Interactive menu:
+
+```powershell
+research-metadata-toolkit
+```
+
+Module entry point:
+
+```powershell
+python -m research_metadata_toolkit
+```
+
+Non-interactive commands:
+
+```powershell
+python -m research_metadata_toolkit encoding input.xlsx output.xlsx
+python -m research_metadata_toolkit doi input.xlsx output.xlsx
+python -m research_metadata_toolkit urls input.xlsx output.xlsx
+```
+
+Package imports:
+
+```python
+from research_metadata_toolkit import fix_encoding, process_doi_file, process_url_file
+```
+
+## Architecture
+
+```text
+research_metadata_toolkit/
+  cli.py
+  main.py
+  data/
+    aliases.json
+    countries.json
+    universities.json
+  toolkit/
+    affiliations/   Country and institution matching
+    api/            OpenAlex and Crossref API access
+    config/         Shared runtime settings
+    doi/            DOI enrichment workflow
+    encoding/       Text encoding cleanup workflow
+    urls/           URL metadata and affiliation workflow
+    utils/          Excel, HTTP, logging, progress, DOI, and text helpers
+tests/
+```
+
+The CLI is registry-driven. To add a new workflow, create a module with a public function, then register it in `research_metadata_toolkit/cli.py`.
+
+## Public Functions
+
+- `fix_encoding(input_file, output_file, columns_to_fix=("Title", "Authors"))`
+- `process_doi_file(input_file, output_file=None, max_workers=None, settings=DEFAULT_SETTINGS)`
+- `process_url_file(input_file, output_file, max_workers=None, settings=DEFAULT_SETTINGS)`
+
+## Configuration
+
+Shared defaults live in `research_metadata_toolkit/toolkit/config/settings.py`:
+
+- DOI and URL worker counts
+- HTTP timeout and retry settings
+- Retry backoff
+- URL access checking behavior
+- HTTP headers and connection pool size
+
+Country and university data live in JSON files under `research_metadata_toolkit/data/`.
+
+## Error Handling And Logging
+
+Core modules use Python logging instead of direct `print()` calls. The CLI configures `INFO`, `WARNING`, and `ERROR` output for users.
+
+Excel loading/saving errors raise `ExcelFileError`. Missing required columns raise `MissingColumnError`. Network/API failures are logged and handled row-by-row so batch processing can continue.
+
+## Examples
+
+Fix text encoding:
+
+```python
+from research_metadata_toolkit import fix_encoding
+
+fix_encoding("raw_metadata.xlsx", "clean_metadata.xlsx")
+```
+
+Run DOI enrichment:
+
+```python
+from research_metadata_toolkit import process_doi_file
+
+process_doi_file("records.xlsx", "doi_results.xlsx")
+```
+
+Run URL affiliation review:
+
+```python
+from research_metadata_toolkit import process_url_file
+
+process_url_file("records.xlsx", "url_results.xlsx")
+```
+
+## Contributing
+
+See `CONTRIBUTING.md` for development setup, coding standards, and pull request guidance.
+
+## License
+
+This project is licensed under the MIT License. See `LICENSE`.
